@@ -1,0 +1,2 @@
+--no-private --protected lib/**/*.rb -m markdown - README.md
+

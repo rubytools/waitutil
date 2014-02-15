@@ -1,6 +1,7 @@
 require 'logger'
 
 module WaitUtil
+
   extend self
 
   class TimeoutError < StandardError
@@ -11,6 +12,10 @@ module WaitUtil
 
   @@logger = Logger.new(STDOUT)
   @@logger.level = Logger::INFO
+
+  def self.logger
+    @@logger
+  end
 
   # Wait until the condition computed by the given block is met. The supplied block may return a
   # boolean or an array of two elements: whether the condition has been met and an additional

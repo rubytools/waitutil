@@ -9,6 +9,11 @@ describe WaitUtil do
   describe '.wait_for_condition' do
     it 'logs if the verbose option is specified' do
       iterations = []
+      WaitUtil.logger.should_receive(:info).with('Waiting for true for up to 60 seconds')
+      WaitUtil.logger.should_receive(:info) do |msg|
+        msg =~ /^Success waiting for true \(.*\)$/
+      end
+
       ret = wait_for_condition('true', :verbose => true) do |iteration|
         iterations << iteration
         true

@@ -7,6 +7,8 @@ delay time, timeout, and logging.
 
 ### Examples
 
+#### Waiting for conditions
+
 Maximum wait time is one minute by default, and the delay time is one second.
 ```ruby
 WaitUtil.wait_for_condition("my_event to happen") do
@@ -19,6 +21,13 @@ Customized wait time and delay time:
 WaitUtil.wait_for_condition("my_event to happen", :timeout_sec => 30, :delay_sec => 0.5) do
   check_if_my_event_happened
 end
+```
+
+#### Waiting for service availability
+
+Wait for a TCP server to be available:
+```ruby
+WaitUtil.wait_for_service('example.com', 8080)
 ```
 
 ### License
