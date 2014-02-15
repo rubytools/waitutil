@@ -81,7 +81,12 @@ describe WaitUtil do
     it 'should succeed immediately when there is a TCP server listening' do
       # Find an unused port.
       socket = Socket.new(:INET, :STREAM, 0)
-      socket.bind(Addrinfo.tcp(BIND_IP, 0))
+      sockaddr = if RUBY_ENGINE == 'jruby'
+        ServerSocket.pack_sockaddr_in(12345, "127.0.0.1")
+      else
+        Addrinfo.tcp(BIND_IP, 0)
+      end
+      socket.bind(sockaddr)
       port = socket.local_address.ip_port
       socket.close
 
