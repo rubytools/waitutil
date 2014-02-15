@@ -87,9 +87,9 @@ describe WaitUtil do
       # Find an unused port.
       socket = Socket.new(:INET, :STREAM, 0)
       sockaddr = if RUBY_ENGINE == 'jruby'
-        ServerSocket.pack_sockaddr_in(12345, "127.0.0.1")
+        ServerSocket.pack_sockaddr_in(0, "127.0.0.1")
       else
-        Addrinfo.tcp(BIND_IP, 0)
+        Socket.pack_sockaddr_in(0, "127.0.0.1")
       end
       socket.bind(sockaddr)
       port = socket.local_address.ip_port
