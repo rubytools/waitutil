@@ -13,7 +13,7 @@ module WaitUtil
   # boolean or an array of two elements: whether the condition has been met and an additional
   # message to display in case of timeout.
   def wait_for_condition(description, options = {}, &block)
-    sleep_sec = options.delete(:sleep_sec) || DEFAULT_DELAY_SEC
+    delay_sec = options.delete(:delay_sec) || DEFAULT_DELAY_SEC
     timeout_sec = options.delete(:timeout_sec) || DEFAULT_TIMEOUT_SEC
     verbose = options.delete(:verbose)
     unless options.empty?
@@ -31,7 +31,7 @@ module WaitUtil
         raise "Timed out waiting for #{description} (#{timeout_sec} seconds elapsed)" +
               get_additional_message(condition_result)
       end
-      sleep(sleep_sec)
+      sleep(delay_sec)
       iteration += 1
     end
     if verbose

@@ -22,7 +22,7 @@ describe WaitUtil do
       iterations = []
       start_time = Time.now
       begin
-        wait_for_condition('false', :timeout_sec => 0.1, :sleep_sec => 0.01) do |iteration|
+        wait_for_condition('false', :timeout_sec => 0.1, :delay_sec => 0.01) do |iteration|
           iterations << iteration
           false
         end
@@ -39,7 +39,7 @@ describe WaitUtil do
 
     it 'should handle additional messages from the block' do
       begin
-        wait_for_condition('false', :timeout_sec => 0.01, :sleep_sec => 0.05) do |iteration|
+        wait_for_condition('false', :timeout_sec => 0.01, :delay_sec => 0.05) do |iteration|
           [false, 'Some error']
         end
         fail 'Expected an exception'
@@ -50,7 +50,7 @@ describe WaitUtil do
 
     it 'should treat the first element of returned tuple as condition status' do
       iterations = []
-      wait_for_condition('some condition', :timeout_sec => 1, :sleep_sec => 0) do |iteration|
+      wait_for_condition('some condition', :timeout_sec => 1, :delay_sec => 0) do |iteration|
         iterations << iteration
         [iteration >= 3, 'some message']
       end
@@ -59,7 +59,7 @@ describe WaitUtil do
 
     it 'should evaluate the block return value as a boolean if it is not an array' do
       iterations = []
-      wait_for_condition('some condition', :timeout_sec => 1, :sleep_sec => 0) do |iteration|
+      wait_for_condition('some condition', :timeout_sec => 1, :delay_sec => 0) do |iteration|
         iterations << iteration
         iteration >= 3
       end
