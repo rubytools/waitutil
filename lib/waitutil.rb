@@ -3,6 +3,9 @@ require 'logger'
 module WaitUtil
   extend self
 
+  class TimeoutError < StandardError
+  end
+
   DEFAULT_TIMEOUT_SEC = 60
   DEFAULT_DELAY_SEC = 1
 
@@ -28,8 +31,10 @@ module WaitUtil
     iteration = 0
     until is_condition_met(condition_result = yield(iteration))
       if Time.now - start_time >= timeout_sec
-        raise "Timed out waiting for #{description} (#{timeout_sec} seconds elapsed)" +
-              get_additional_message(condition_result)
+        raise TimeoutError.new(
+          "Timed out waiting for #{description} (#{timeout_sec} seconds elapsed)" +
+          get_additional_message(condition_result)
+        )
       end
       sleep(delay_sec)
       iteration += 1

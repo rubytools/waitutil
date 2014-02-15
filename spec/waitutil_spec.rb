@@ -1,4 +1,5 @@
 require 'waitutil'
+require 'socket'
 
 RSpec.configure do |configuration|
   configuration.include WaitUtil
@@ -27,7 +28,7 @@ describe WaitUtil do
           false
         end
         fail 'Expected an exception'
-      rescue RuntimeError => ex
+      rescue WaitUtil::TimeoutError => ex
         expect(ex.to_s).to match(/^Timed out waiting for false /)
       end
       elapsed_sec = Time.now - start_time
@@ -43,7 +44,7 @@ describe WaitUtil do
           [false, 'Some error']
         end
         fail 'Expected an exception'
-      rescue RuntimeError => ex
+      rescue WaitUtil::TimeoutError => ex
         expect(ex.to_s).to match(/^Timed out waiting for false (.*): Some error$/)
       end
     end
@@ -65,5 +66,53 @@ describe WaitUtil do
       end
       expect(iterations).to eq([0, 1, 2, 3])
     end
+  end
+
+  describe '.wait_for_service' do
+    BIND_IP = '127.0.0.1'
+
+    it 'should succeed immediately when there is a TCP server listening' do
+      # Find an unused port.
+      socket = Socket.new(:INET, :STREAM, 0)
+      socket.bind(Addrinfo.tcp(BIND_IP, 0))
+      port = socket.local_address.ip_port
+      socket.close
+
+      server_thread = Thread.new do
+        server = TCPServer.new(port)
+        loop do
+          client = server.accept  # Wait for a client to connect
+          client.puts "Hello !"
+          client.close
+          break
+        end
+      end
+
+      wait_for_service('wait for my service', BIND_IP, port, :delay_sec => 0.1, :timeout_sec => 0.3)
+    end
+
+    it 'should fail when there is no TCP server listening' do
+      port = nil
+      # Find a port that no one is listening on.
+      attempts = 0
+      while attempts < 100
+        port = 32768 + rand(61000 - 32768)
+        begin
+          TCPSocket.new(BIND_IP, port)
+          port = nil
+        rescue Errno::ECONNREFUSED
+          break
+        end
+        attempts += 1
+      end
+      fail 'Could not find a port no one is listening on' unless port
+
+      expect {
+        wait_for_service(
+          'wait for non-existent service', BIND_IP, port, :delay_sec => 0.1, :timeout_sec => 0.3
+        )
+      }.to raise_error(WaitUtil::TimeoutError)
+    end
+
   end
 end
