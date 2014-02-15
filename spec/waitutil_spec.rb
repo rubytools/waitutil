@@ -9,13 +9,18 @@ describe WaitUtil do
   describe '.wait_for_condition' do
     it 'logs if the verbose option is specified' do
       iterations = []
-      wait_for_condition('true', :verbose => true) {|iteration| iterations << iteration; true }
+      ret = wait_for_condition('true', :verbose => true) do |iteration|
+        iterations << iteration
+        true
+      end
+      expect(ret).to be_true
       expect(iterations).to eq([0])
     end
 
     it 'returns immediately if the condition is true' do
       iterations = []
-      wait_for_condition('true') {|iteration| iterations << iteration; true }
+      ret = wait_for_condition('true') {|iteration| iterations << iteration; true }
+      expect(ret).to be_true
       expect(iterations).to eq([0])
     end
 
@@ -51,19 +56,21 @@ describe WaitUtil do
 
     it 'should treat the first element of returned tuple as condition status' do
       iterations = []
-      wait_for_condition('some condition', :timeout_sec => 1, :delay_sec => 0) do |iteration|
+      ret = wait_for_condition('some condition', :timeout_sec => 1, :delay_sec => 0) do |iteration|
         iterations << iteration
         [iteration >= 3, 'some message']
       end
+      expect(ret).to be_true
       expect(iterations).to eq([0, 1, 2, 3])
     end
 
     it 'should evaluate the block return value as a boolean if it is not an array' do
       iterations = []
-      wait_for_condition('some condition', :timeout_sec => 1, :delay_sec => 0) do |iteration|
+      ret = wait_for_condition('some condition', :timeout_sec => 1, :delay_sec => 0) do |iteration|
         iterations << iteration
         iteration >= 3
       end
+      expect(ret).to be_true
       expect(iterations).to eq([0, 1, 2, 3])
     end
   end
