@@ -10,9 +10,9 @@ Gem::Specification.new do |gem|
   gem.summary       = 'Utilities for waiting for various conditions'
   gem.homepage      = "http://github.com/mbautin/#{GEM_NAME}"
 
-  gem.executables   = `git ls-files -- bin/*`.split('\n').map{ |f| File.basename(f) }
+  gem.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
   gem.files         = `git ls-files`.split("\n").map(&:strip)
-  gem.test_files    = `git ls-files -- {test,spec,features}/*`.split('\n')
+  gem.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
   gem.name          = GEM_NAME
   gem.require_paths = ['lib']
   gem.version       = WaitUtil::VERSION
