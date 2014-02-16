@@ -71,9 +71,12 @@ src="https://travis-ci.org/mbautin/waitutil.png?branch=master"></a></p>
 occur, with a configurable delay time, timeout, and logging.</p>
 
 <p>This gem on RubyGems: <a
-href="http://rubygems.org/gems/waitutil">rubygems.org/gems/waitutil</a></p>
+href="http://rubygems.org/gems/waitutil">rubygems.org/gems/waitutil</a>.</p>
 
 <h3 id="label-Examples">Examples</h3>
+
+<p>Wait methods take a block that returns <code>true</code> or
+<code>false</code></p>
 
 <h4 id="label-Waiting+for+conditions">Waiting for conditions</h4>
 
@@ -94,8 +97,10 @@ second.</p>
 
 <h4 id="label-Waiting+for+service+availability">Waiting for service availability</h4>
 
-<p>Wait for a TCP server to be available: <code>ruby
-WaitUtil.wait_for_service(&#39;example.com&#39;, 8080) </code></p>
+<p>Wait for a TCP server to be available:</p>
+
+<pre class="code ruby"><code class="ruby"><span class='const'>WaitUtil</span><span class='period'>.</span><span class='id identifier rubyid_wait_for_service'>wait_for_service</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>example.com</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span> <span class='int'>8080</span><span class='rparen'>)</span>
+</code></pre>
 
 <h3 id="label-License">License</h3>
 
@@ -104,7 +109,7 @@ Version 2.0</a></p>
 </div></div>
 
     <div id="footer">
-  Generated on Sat Feb 15 17:02:17 2014 by
+  Generated on Sun Feb 16 00:15:48 2014 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.8.7.3 (ruby-2.1.0).
 </div>
