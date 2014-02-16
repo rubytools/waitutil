@@ -58,6 +58,7 @@ end
 ```
 
 Output:
+
 ```
 I, [2014-02-16T00:46:53.647936 #17252]  INFO -- : Waiting for my event for up to 3 seconds
 WaitUtil::TimeoutError: Timed out waiting for my event (3 seconds elapsed): attempt 3
