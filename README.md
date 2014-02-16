@@ -13,7 +13,7 @@ Documentation: http://rubytools.github.io/waitutil/
 
 ### Examples
 
-Wait methods take a block that returns `true` or `false`
+Wait methods take a block that returns `true` or `false`.
 
 #### Waiting for conditions
 
