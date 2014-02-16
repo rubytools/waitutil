@@ -33,6 +33,18 @@ WaitUtil.wait_for_condition("my_event to happen", :timeout_sec => 30, :delay_sec
 end
 ```
 
+Logging:
+
+```ruby
+WaitUtil.wait_for_condition('my event', :verbose => true) { sleep(1) }
+```
+
+Output:
+```
+I, [2014-02-16T00:34:31.511915 #15897]  INFO -- : Waiting for my event for up to 60 seconds
+I, [2014-02-16T00:34:32.512223 #15897]  INFO -- : Success waiting for my event (1.000153273 seconds)
+```
+
 #### Waiting for service availability
 
 Wait for a TCP server to be available:
