@@ -5,6 +5,8 @@
 `waitutil` provides tools for waiting for various conditions to occur, with a configurable
 delay time, timeout, and logging.
 
+GitHub URL: https://github.com/rubytools/waitutil.
+
 This gem on RubyGems: http://rubygems.org/gems/waitutil.
 
 Full documentation available at http://rubytools.github.io/waitutil/.
