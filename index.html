@@ -82,7 +82,7 @@ href="http://rubytools.github.io/waitutil">rubytools.github.io/waitutil</a>/</p>
 <h3 id="label-Examples">Examples</h3>
 
 <p>Wait methods take a block that returns <code>true</code> or
-<code>false</code></p>
+<code>false</code>.</p>
 
 <h4 id="label-Waiting+for+conditions">Waiting for conditions</h4>
 
@@ -94,14 +94,14 @@ second.</p>
 <span class='kw'>end</span>
 </code></pre>
 
-<p>Customized wait time and delay time:</p>
+<h5 id="label-Customized+wait+time+and+delay+time">Customized wait time and delay time</h5>
 
 <pre class="code ruby"><code class="ruby"><span class='const'>WaitUtil</span><span class='period'>.</span><span class='id identifier rubyid_wait_for_condition'>wait_for_condition</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>my_event to happen</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='symbol'>:timeout_sec</span> <span class='op'>=&gt;</span> <span class='int'>30</span><span class='comma'>,</span> <span class='symbol'>:delay_sec</span> <span class='op'>=&gt;</span> <span class='float'>0.5</span><span class='rparen'>)</span> <span class='kw'>do</span>
   <span class='id identifier rubyid_check_if_my_event_happened'>check_if_my_event_happened</span>
 <span class='kw'>end</span>
 </code></pre>
 
-<p>Verbose logging (wait start and end events):</p>
+<h5 id="label-Verbose+logging">Verbose logging</h5>
 
 <pre class="code ruby"><code class="ruby"><span class='const'>WaitUtil</span><span class='period'>.</span><span class='id identifier rubyid_wait_for_condition'>wait_for_condition</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>my event</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span> <span class='symbol'>:verbose</span> <span class='op'>=&gt;</span> <span class='kw'>true</span><span class='rparen'>)</span> <span class='lbrace'>{</span> <span class='id identifier rubyid_sleep'>sleep</span><span class='lparen'>(</span><span class='int'>1</span><span class='rparen'>)</span> <span class='rbrace'>}</span>
 </code></pre>
@@ -110,6 +110,24 @@ second.</p>
 
 <pre class="code ruby"><code class="ruby">I, [2014-02-16T00:34:31.511915 #15897]  INFO -- : Waiting for my event for up to 60 seconds
 I, [2014-02-16T00:34:32.512223 #15897]  INFO -- : Success waiting for my event (1.000153273 seconds)</code></pre>
+
+<h5 id="label-Returning+additional+information+for+the+timeout+log+message">Returning additional information for the timeout log message</h5>
+
+<pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_attempt'>attempt</span> <span class='op'>=</span> <span class='int'>1</span>
+<span class='const'>WaitUtil</span><span class='period'>.</span><span class='id identifier rubyid_wait_for_condition'>wait_for_condition</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>my event</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span> <span class='symbol'>:verbose</span> <span class='op'>=&gt;</span> <span class='kw'>true</span><span class='comma'>,</span> <span class='symbol'>:timeout_sec</span> <span class='op'>=&gt;</span> <span class='int'>3</span><span class='comma'>,</span> <span class='symbol'>:delay_sec</span> <span class='op'>=&gt;</span> <span class='int'>1</span><span class='rparen'>)</span> <span class='kw'>do</span>
+  <span class='id identifier rubyid_sleep'>sleep</span><span class='lparen'>(</span><span class='int'>1</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_attempt'>attempt</span> <span class='op'>+=</span> <span class='int'>1</span>
+  <span class='lbracket'>[</span><span class='kw'>false</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>attempt </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_attempt'>attempt</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span>  <span class='comment'># the second element goes into the log message
+</span><span class='kw'>end</span>
+</code></pre>
+
+<p>Output: <code> I, [2014-02-16T00:46:53.647936 #17252]  INFO -- : Waiting
+for my event for up to 3 seconds WaitUtil::TimeoutError: Timed out waiting
+for my event (3 seconds elapsed): attempt 3         from
+/home/mbautin/.rvm/gems/ruby-2.1.0/gems/waitutil-0.1.0/lib/waitutil.rb:39:in
+`wait_for_condition&#39;         from (irb):9         from
+/home/mbautin/.rvm/rubies/ruby-2.1.0/bin/irb:11:in `&lt;main&gt;&#39;
+</code></p>
 
 <h4 id="label-Waiting+for+service+availability">Waiting for service availability</h4>
 
@@ -125,7 +143,7 @@ Version 2.0</a></p>
 </div></div>
 
     <div id="footer">
-  Generated on Sun Feb 16 00:37:28 2014 by
+  Generated on Sun Feb 16 00:48:12 2014 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.8.7.3 (ruby-2.1.0).
 </div>
