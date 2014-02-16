@@ -1,0 +1,113 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>
+  File: README
+  
+    &mdash; Documentation by YARD 0.8.7.3
+  
+</title>
+
+  <link rel="stylesheet" href="css/style.css" type="text/css" charset="utf-8" />
+
+  <link rel="stylesheet" href="css/common.css" type="text/css" charset="utf-8" />
+
+<script type="text/javascript" charset="utf-8">
+  hasFrames = window.top.frames.main ? true : false;
+  relpath = '';
+  framesUrl = "frames.html#!" + escape(window.location.href);
+</script>
+
+
+  <script type="text/javascript" charset="utf-8" src="js/jquery.js"></script>
+
+  <script type="text/javascript" charset="utf-8" src="js/app.js"></script>
+
+
+  </head>
+  <body>
+    <div id="header">
+      <div id="menu">
+  
+    <a href="_index.html">Index</a> &raquo; 
+    <span class="title">File: README</span>
+  
+
+  <div class="noframes"><span class="title">(</span><a href="." target="_top">no frames</a><span class="title">)</span></div>
+</div>
+
+      <div id="search">
+  
+    <a class="full_list_link" id="class_list_link"
+        href="class_list.html">
+      Class List
+    </a>
+  
+    <a class="full_list_link" id="method_list_link"
+        href="method_list.html">
+      Method List
+    </a>
+  
+    <a class="full_list_link" id="file_list_link"
+        href="file_list.html">
+      File List
+    </a>
+  
+</div>
+      <div class="clear"></div>
+    </div>
+
+    <iframe id="search_frame"></iframe>
+
+    <div id="content"><div id='filecontents'>
+<h2 id="label-waitutil">waitutil</h2>
+
+<p><a href="https://travis-ci.org/mbautin/waitutil"><img
+src="https://travis-ci.org/mbautin/waitutil.png?branch=master"></a></p>
+
+<p><code>waitutil</code> provides tools for waiting for various conditions to
+occur, with a configurable delay time, timeout, and logging.</p>
+
+<p>This gem on RubyGems: <a
+href="http://rubygems.org/gems/waitutil">rubygems.org/gems/waitutil</a></p>
+
+<h3 id="label-Examples">Examples</h3>
+
+<h4 id="label-Waiting+for+conditions">Waiting for conditions</h4>
+
+<p>Maximum wait time is one minute by default, and the delay time is one
+second.</p>
+
+<pre class="code ruby"><code class="ruby"><span class='const'>WaitUtil</span><span class='period'>.</span><span class='id identifier rubyid_wait_for_condition'>wait_for_condition</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>my_event to happen</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span> <span class='kw'>do</span>
+  <span class='id identifier rubyid_check_if_my_event_happened'>check_if_my_event_happened</span>
+<span class='kw'>end</span>
+</code></pre>
+
+<p>Customized wait time and delay time:</p>
+
+<pre class="code ruby"><code class="ruby"><span class='const'>WaitUtil</span><span class='period'>.</span><span class='id identifier rubyid_wait_for_condition'>wait_for_condition</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>my_event to happen</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='symbol'>:timeout_sec</span> <span class='op'>=&gt;</span> <span class='int'>30</span><span class='comma'>,</span> <span class='symbol'>:delay_sec</span> <span class='op'>=&gt;</span> <span class='float'>0.5</span><span class='rparen'>)</span> <span class='kw'>do</span>
+  <span class='id identifier rubyid_check_if_my_event_happened'>check_if_my_event_happened</span>
+<span class='kw'>end</span>
+</code></pre>
+
+<h4 id="label-Waiting+for+service+availability">Waiting for service availability</h4>
+
+<p>Wait for a TCP server to be available: <code>ruby
+WaitUtil.wait_for_service(&#39;example.com&#39;, 8080) </code></p>
+
+<h3 id="label-License">License</h3>
+
+<p><a href="http://www.apache.org/licenses/LICENSE-2.0.html">Apache License,
+Version 2.0</a></p>
+</div></div>
+
+    <div id="footer">
+  Generated on Sat Feb 15 17:02:17 2014 by
+  <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
+  0.8.7.3 (ruby-2.1.0).
+</div>
+
+  </body>
+</html>
