@@ -33,7 +33,7 @@ WaitUtil.wait_for_condition("my_event to happen", :timeout_sec => 30, :delay_sec
 end
 ```
 
-Logging:
+Verbose logging (wait start and end events):
 
 ```ruby
 WaitUtil.wait_for_condition('my event', :verbose => true) { sleep(1) }
