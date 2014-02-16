@@ -121,13 +121,13 @@ I, [2014-02-16T00:34:32.512223 #15897]  INFO -- : Success waiting for my event (
 </span><span class='kw'>end</span>
 </code></pre>
 
-<p>Output: <code> I, [2014-02-16T00:46:53.647936 #17252]  INFO -- : Waiting
-for my event for up to 3 seconds WaitUtil::TimeoutError: Timed out waiting
-for my event (3 seconds elapsed): attempt 3         from
-/home/mbautin/.rvm/gems/ruby-2.1.0/gems/waitutil-0.1.0/lib/waitutil.rb:39:in
-`wait_for_condition&#39;         from (irb):9         from
-/home/mbautin/.rvm/rubies/ruby-2.1.0/bin/irb:11:in `&lt;main&gt;&#39;
-</code></p>
+<p>Output:</p>
+
+<pre class="code ruby"><code class="ruby">I, [2014-02-16T00:46:53.647936 #17252]  INFO -- : Waiting for my event for up to 3 seconds
+WaitUtil::TimeoutError: Timed out waiting for my event (3 seconds elapsed): attempt 3
+        from /home/mbautin/.rvm/gems/ruby-2.1.0/gems/waitutil-0.1.0/lib/waitutil.rb:39:in `wait_for_condition&#39;
+        from (irb):9
+        from /home/mbautin/.rvm/rubies/ruby-2.1.0/bin/irb:11:in `&lt;main&gt;&#39;</code></pre>
 
 <h4 id="label-Waiting+for+service+availability">Waiting for service availability</h4>
 
@@ -143,7 +143,7 @@ Version 2.0</a></p>
 </div></div>
 
     <div id="footer">
-  Generated on Sun Feb 16 00:48:13 2014 by
+  Generated on Sun Feb 16 00:48:43 2014 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.8.7.3 (ruby-2.1.0).
 </div>
