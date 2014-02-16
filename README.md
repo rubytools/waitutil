@@ -1,6 +1,6 @@
 ## waitutil
 
-[![Build Status](https://travis-ci.org/mbautin/waitutil.png?branch=master)](https://travis-ci.org/mbautin/waitutil)
+[![Build Status](https://travis-ci.org/rubytools/waitutil.png?branch=master)](https://travis-ci.org/rubytools/waitutil)
 
 `waitutil` provides tools for waiting for various conditions to occur, with a configurable
 delay time, timeout, and logging.
