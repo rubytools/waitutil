@@ -7,6 +7,8 @@ delay time, timeout, and logging.
 
 This gem on RubyGems: http://rubygems.org/gems/waitutil.
 
+Full documentation available at http://rubytools.github.io/waitutil/.
+
 ### Examples
 
 Wait methods take a block that returns `true` or `false`
