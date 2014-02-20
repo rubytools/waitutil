@@ -8,7 +8,7 @@ Gem::Specification.new do |gem|
   gem.email         = ['mbautin@gmail.com']
   gem.description   = 'Utilities for waiting for various conditions'
   gem.summary       = 'Utilities for waiting for various conditions'
-  gem.homepage      = "http://github.com/mbautin/#{GEM_NAME}"
+  gem.homepage      = "http://github.com/rubytools/#{GEM_NAME}"
 
   gem.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
   gem.files         = `git ls-files`.split("\n").map(&:strip)
