@@ -17,7 +17,13 @@ Wait methods take a block that returns `true` or `false`.
 
 #### Waiting for conditions
 
-Maximum wait time is one minute by default, and the delay time is one second.
+[`wait_for_condition`](http://rubytools.github.io/waitutil/WaitUtil.html#wait_for_condition-instance_method)
+waits for a condition computed by the given function.  It takes two optional
+parameters, `:timeout_sec` and `:delay_sec`, that control how long the function
+waits before raising a timeout exception, and how frequently it checks for the
+condition. The time the condition block takes to evaluate is subtracted from
+the sleep time between successive checks.  The timeout is one minute by
+default, and the delay time is one second.
 
 ```ruby
 WaitUtil.wait_for_condition("my_event to happen") do
@@ -69,7 +75,7 @@ WaitUtil::TimeoutError: Timed out waiting for my event (3 seconds elapsed): atte
 
 #### Waiting for service availability
 
-Wait for a TCP server to be available using [wait_for_service](http://rubytools.github.io/waitutil/WaitUtil.html#wait_for_service-instance_method):
+Wait for a TCP server to be available using [`wait_for_service`](http://rubytools.github.io/waitutil/WaitUtil.html#wait_for_service-instance_method):
 
 ```ruby
 WaitUtil.wait_for_service('my service', 'example.com', 80)
