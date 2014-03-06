@@ -1,4 +1,5 @@
 require 'logger'
+require 'socket'
 
 module WaitUtil
 
@@ -33,38 +34,47 @@ module WaitUtil
     end
 
     start_time = Time.now
+    stop_time = start_time + timeout_sec
     iteration = 0
+
+    # Time when we started to evaluate the condition.
+    condition_eval_start_time = start_time
+
     until is_condition_met(condition_result = yield(iteration))
-      if Time.now - start_time >= timeout_sec
+      current_time = Time.now
+      if current_time - start_time >= timeout_sec
         raise TimeoutError.new(
           "Timed out waiting for #{description} (#{timeout_sec} seconds elapsed)" +
           get_additional_message(condition_result)
         )
       end
-      sleep(delay_sec)
+
+      # The condition evaluation function might have taken some time, so we subtract that time
+      # from the time we have to wait.
+      sleep_time_sec = condition_eval_start_time + delay_sec - current_time
+      sleep(sleep_time_sec) if sleep_time_sec > 0
+
       iteration += 1
+      condition_eval_start_time = Time.now  # we will evaluate the condition again immediately
     end
+
     if verbose
       @@logger.info("Success waiting for #{description} (#{Time.now - start_time} seconds)")
     end
     true
   end
 
-  # Wait until a service is available at the given host/port.
+  # Wait until a TCP service is available at the given host/port.
   def wait_for_service(description, host, port, options = {})
-    wait_for_condition("#{description} port #{port} to become available on #{host}",
+    wait_for_condition("#{description} to become available on #{host}, port #{port}",
                        options) do
       begin
-        s = TCPSocket.new(host, port)
-        s.close
-        true
-      rescue Errno::ECONNREFUSED, Errno::EHOSTUNREACH
+        is_tcp_port_open(host, port, options[:delay_sec] || DEFAULT_DELAY_SEC)
+      rescue SocketError
         false
       end
     end
   end
-
-  private
 
   def is_condition_met(condition_result)
     condition_result.kind_of?(Array) ? condition_result[0] : condition_result
@@ -72,6 +82,32 @@ module WaitUtil
 
   def get_additional_message(condition_result)
     condition_result.kind_of?(Array) ? ': ' + condition_result[1] : ''
+  end
+
+  # Check if the given TCP port is open on the given port with a timeout.
+  def is_tcp_port_open(host, port, timeout_sec = nil)
+    socket = Socket.new(Socket::AF_INET, Socket::SOCK_STREAM, 0)
+    sockaddr = Socket.sockaddr_in(port, host)
+    result = begin
+      socket.connect_nonblock(sockaddr)
+      true
+    rescue Errno::EINPROGRESS
+      reader, writer, error = IO.select([socket], [socket], [socket], timeout_sec)
+      if writer.nil? || writer.empty?
+        false
+      else
+        # Sometimes we have to write some data to the socket to find out whether we are really
+        # connected.
+        begin
+          writer[0].write_nonblock("\x0")
+          true
+        rescue Errno::ECONNREFUSED
+          false
+        end
+      end
+    end
+    socket.close
+    result
   end
 
   extend WaitUtil

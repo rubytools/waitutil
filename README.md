@@ -72,7 +72,7 @@ WaitUtil::TimeoutError: Timed out waiting for my event (3 seconds elapsed): atte
 Wait for a TCP server to be available:
 
 ```ruby
-WaitUtil.wait_for_service('example.com', 8080)
+WaitUtil.wait_for_service('my service', 'example.com', 80)
 ```
 
 ### License

@@ -83,6 +83,45 @@ describe WaitUtil do
   describe '.wait_for_service' do
     BIND_IP = '127.0.0.1'
 
+    it 'waits for service availability' do
+      WaitUtil.wait_for_service('Google', 'google.com', 80, :timeout_sec => 0.5)
+    end
+
+    it 'times out when host name does not exist' do
+      begin
+        WaitUtil.wait_for_service(
+          'non-existent service',
+          'nosuchhost_waitutil_ruby_module.com',
+          12345,
+          :timeout_sec => 0.2,
+          :delay_sec => 0.1
+        )
+        fail("Expecting WaitUtil::TimeoutError but nothing was raised")
+      rescue WaitUtil::TimeoutError => ex
+        expect(ex.to_s.gsub(/ \(.*/, '')).to eq(
+          'Timed out waiting for non-existent service to become available on ' \
+          'nosuchhost_waitutil_ruby_module.com, port 12345'
+        )
+      end
+    end
+
+    it 'times out when port is closed' do
+      begin
+        WaitUtil.wait_for_service(
+          'wrong port on Google',
+          'google.com',
+          12345,
+          :timeout_sec => 0.2,
+          :delay_sec => 0.1
+        )
+      rescue WaitUtil::TimeoutError => ex
+        expect(ex.to_s.gsub(/ \(.*/, '')).to eq(
+          'Timed out waiting for wrong port on Google to become available on google.com, ' \
+          'port 12345'
+        )
+      end
+    end
+
     it 'should succeed immediately when there is a TCP server listening' do
       # Find an unused port.
       socket = Socket.new(:INET, :STREAM, 0)
@@ -130,6 +169,6 @@ describe WaitUtil do
         )
       }.to raise_error(WaitUtil::TimeoutError)
     end
-
   end
+
 end
