@@ -88,42 +88,53 @@ module WaitUtil
 
   # Check if the given TCP port is open on the given port with a timeout.
   def is_tcp_port_open(host, port, timeout_sec = nil)
-    addr_info = begin
-      Socket.getaddrinfo(host, port)
-    rescue SocketError
-      return false
-    end.select {|item| item[0] == 'AF_INET' }
-
-    return false if addr_info.empty?
-
-    socket = Socket.new(Socket::AF_INET, Socket::SOCK_STREAM, 0)
-    ip_addr = addr_info[0][3]
-    sockaddr = Socket.sockaddr_in(port, ip_addr)
-    result = begin
+    if RUBY_PLATFORM == 'java'
+      # Unfortunately, our select-based approach does not work on JRuby.
       begin
-        socket.connect_nonblock(sockaddr)
+        s = TCPSocket.new(host, port)
+        s.close
         true
-      rescue Errno::EAFNOSUPPORT
-        @@logger.error("Address family not supported for #{ip_addr}")
+      rescue Errno::ECONNREFUSED, Errno::EHOSTUNREACH
         false
       end
-    rescue Errno::EINPROGRESS
-      reader, writer, error = IO.select([socket], [socket], [socket], timeout_sec)
-      if writer.nil? || writer.empty?
-        false
-      else
-        # Sometimes we have to write some data to the socket to find out whether we are really
-        # connected.
+    else
+      addr_info = begin
+        Socket.getaddrinfo(host, port)
+      rescue SocketError
+        return false
+      end.select {|item| item[0] == 'AF_INET' }
+
+      return false if addr_info.empty?
+
+      socket = Socket.new(Socket::AF_INET, Socket::SOCK_STREAM, 0)
+      ip_addr = addr_info[0][3]
+      sockaddr = Socket.sockaddr_in(port, ip_addr)
+      result = begin
         begin
-          writer[0].write_nonblock("\x0")
+          socket.connect_nonblock(sockaddr)
           true
-        rescue Errno::ECONNREFUSED
+        rescue Errno::EAFNOSUPPORT
+          @@logger.error("Address family not supported for #{ip_addr}")
           false
         end
+      rescue Errno::EINPROGRESS
+        reader, writer, error = IO.select([socket], [socket], [socket], timeout_sec)
+        if writer.nil? || writer.empty?
+          false
+        else
+          # Sometimes we have to write some data to the socket to find out whether we are really
+          # connected.
+          begin
+            writer[0].write_nonblock("\x0")
+            true
+          rescue Errno::ECONNREFUSED
+            false
+          end
+        end
       end
+      socket.close
+      result
     end
-    socket.close
-    result
   end
 
   extend WaitUtil
