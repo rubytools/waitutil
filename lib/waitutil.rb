@@ -88,8 +88,15 @@ module WaitUtil
 
   # Check if the given TCP port is open on the given port with a timeout.
   def is_tcp_port_open(host, port, timeout_sec = nil)
+    addr_info = begin
+      Socket.getaddrinfo(host, port)
+    rescue SocketError
+      return false
+    end
+    return false if addr_info.empty?
+
     socket = Socket.new(Socket::AF_INET, Socket::SOCK_STREAM, 0)
-    sockaddr = Socket.sockaddr_in(port, host)
+    sockaddr = Socket.sockaddr_in(port, addr_info[0][3])
     result = begin
       socket.connect_nonblock(sockaddr)
       true
