@@ -69,7 +69,7 @@ WaitUtil::TimeoutError: Timed out waiting for my event (3 seconds elapsed): atte
 
 #### Waiting for service availability
 
-Wait for a TCP server to be available:
+Wait for a TCP server to be available using [wait_for_service](http://rubytools.github.io/waitutil/WaitUtil.html#wait_for_service-instance_method):
 
 ```ruby
 WaitUtil.wait_for_service('my service', 'example.com', 80)
