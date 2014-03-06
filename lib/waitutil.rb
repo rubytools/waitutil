@@ -76,6 +76,8 @@ module WaitUtil
     end
   end
 
+  private
+
   def is_condition_met(condition_result)
     condition_result.kind_of?(Array) ? condition_result[0] : condition_result
   end
