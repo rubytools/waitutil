@@ -92,14 +92,21 @@ module WaitUtil
       Socket.getaddrinfo(host, port)
     rescue SocketError
       return false
-    end
+    end.select {|item| item[0] == 'AF_INET' }
+
     return false if addr_info.empty?
 
     socket = Socket.new(Socket::AF_INET, Socket::SOCK_STREAM, 0)
-    sockaddr = Socket.sockaddr_in(port, addr_info[0][3])
+    ip_addr = addr_info[0][3]
+    sockaddr = Socket.sockaddr_in(port, ip_addr)
     result = begin
-      socket.connect_nonblock(sockaddr)
-      true
+      begin
+        socket.connect_nonblock(sockaddr)
+        true
+      rescue Errno::EAFNOSUPPORT
+        @@logger.error("Address family not supported for #{ip_addr}")
+        false
+      end
     rescue Errno::EINPROGRESS
       reader, writer, error = IO.select([socket], [socket], [socket], timeout_sec)
       if writer.nil? || writer.empty?
