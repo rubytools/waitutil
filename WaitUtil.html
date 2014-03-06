@@ -219,7 +219,7 @@
 
   
     <span class="summary_desc"><div class='inline'>
-<p>Wait until a service is available at the given host/port.</p>
+<p>Wait until a TCP service is available at the given host/port.</p>
 </div></span>
   
 </li>
@@ -249,12 +249,12 @@
       <pre class="lines">
 
 
-16
 17
-18</pre>
+18
+19</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/waitutil.rb', line 16</span>
+      <pre class="code"><span class="info file"># File 'lib/waitutil.rb', line 17</span>
 
 <span class='kw'>def</span> <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_logger'>logger</span>
   <span class='cvar'>@@logger</span>
@@ -299,7 +299,6 @@ timeout.</p>
       <pre class="lines">
 
 
-23
 24
 25
 26
@@ -327,37 +326,64 @@ timeout.</p>
 48
 49
 50
-51</pre>
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/waitutil.rb', line 23</span>
+      <pre class="code"><span class="info file"># File 'lib/waitutil.rb', line 24</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_wait_for_condition'>wait_for_condition</span><span class='lparen'>(</span><span class='id identifier rubyid_description'>description</span><span class='comma'>,</span> <span class='id identifier rubyid_options'>options</span> <span class='op'>=</span> <span class='lbrace'>{</span><span class='rbrace'>}</span><span class='comma'>,</span> <span class='op'>&amp;</span><span class='id identifier rubyid_block'>block</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_delay_sec'>delay_sec</span> <span class='op'>=</span> <span class='id identifier rubyid_options'>options</span><span class='period'>.</span><span class='id identifier rubyid_delete'>delete</span><span class='lparen'>(</span><span class='symbol'>:delay_sec</span><span class='rparen'>)</span> <span class='op'>||</span> <span class='const'>DEFAULT_DELAY_SEC</span>
   <span class='id identifier rubyid_timeout_sec'>timeout_sec</span> <span class='op'>=</span> <span class='id identifier rubyid_options'>options</span><span class='period'>.</span><span class='id identifier rubyid_delete'>delete</span><span class='lparen'>(</span><span class='symbol'>:timeout_sec</span><span class='rparen'>)</span> <span class='op'>||</span> <span class='const'>DEFAULT_TIMEOUT_SEC</span>
   <span class='id identifier rubyid_verbose'>verbose</span> <span class='op'>=</span> <span class='id identifier rubyid_options'>options</span><span class='period'>.</span><span class='id identifier rubyid_delete'>delete</span><span class='lparen'>(</span><span class='symbol'>:verbose</span><span class='rparen'>)</span>
   <span class='kw'>unless</span> <span class='id identifier rubyid_options'>options</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span>
-    <span class='id identifier rubyid_raise'>raise</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Invalid options: </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_options'>options</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span>
+    <span class='id identifier rubyid_raise'>raise</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Invalid options: </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_options'>options</span><span class='rbrace'>}</span><span class='tstring_end'>&quot;</span></span>
   <span class='kw'>end</span>
 
   <span class='kw'>if</span> <span class='id identifier rubyid_verbose'>verbose</span>
-    <span class='cvar'>@@logger</span><span class='period'>.</span><span class='id identifier rubyid_info'>info</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Waiting for </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_description'>description</span><span class='embexpr_end'>}</span><span class='tstring_content'> for up to </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_timeout_sec'>timeout_sec</span><span class='embexpr_end'>}</span><span class='tstring_content'> seconds</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+    <span class='cvar'>@@logger</span><span class='period'>.</span><span class='id identifier rubyid_info'>info</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Waiting for </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_description'>description</span><span class='rbrace'>}</span><span class='tstring_content'> for up to </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_timeout_sec'>timeout_sec</span><span class='rbrace'>}</span><span class='tstring_content'> seconds</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
   <span class='kw'>end</span>
 
   <span class='id identifier rubyid_start_time'>start_time</span> <span class='op'>=</span> <span class='const'>Time</span><span class='period'>.</span><span class='id identifier rubyid_now'>now</span>
+  <span class='id identifier rubyid_stop_time'>stop_time</span> <span class='op'>=</span> <span class='id identifier rubyid_start_time'>start_time</span> <span class='op'>+</span> <span class='id identifier rubyid_timeout_sec'>timeout_sec</span>
   <span class='id identifier rubyid_iteration'>iteration</span> <span class='op'>=</span> <span class='int'>0</span>
+
+  <span class='comment'># Time when we started to evaluate the condition.
+</span>  <span class='id identifier rubyid_condition_eval_start_time'>condition_eval_start_time</span> <span class='op'>=</span> <span class='id identifier rubyid_start_time'>start_time</span>
+
   <span class='kw'>until</span> <span class='id identifier rubyid_is_condition_met'>is_condition_met</span><span class='lparen'>(</span><span class='id identifier rubyid_condition_result'>condition_result</span> <span class='op'>=</span> <span class='kw'>yield</span><span class='lparen'>(</span><span class='id identifier rubyid_iteration'>iteration</span><span class='rparen'>)</span><span class='rparen'>)</span>
-    <span class='kw'>if</span> <span class='const'>Time</span><span class='period'>.</span><span class='id identifier rubyid_now'>now</span> <span class='op'>-</span> <span class='id identifier rubyid_start_time'>start_time</span> <span class='op'>&gt;=</span> <span class='id identifier rubyid_timeout_sec'>timeout_sec</span>
+    <span class='id identifier rubyid_current_time'>current_time</span> <span class='op'>=</span> <span class='const'>Time</span><span class='period'>.</span><span class='id identifier rubyid_now'>now</span>
+    <span class='kw'>if</span> <span class='id identifier rubyid_current_time'>current_time</span> <span class='op'>-</span> <span class='id identifier rubyid_start_time'>start_time</span> <span class='op'>&gt;=</span> <span class='id identifier rubyid_timeout_sec'>timeout_sec</span>
       <span class='id identifier rubyid_raise'>raise</span> <span class='const'>TimeoutError</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span>
-        <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Timed out waiting for </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_description'>description</span><span class='embexpr_end'>}</span><span class='tstring_content'> (</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_timeout_sec'>timeout_sec</span><span class='embexpr_end'>}</span><span class='tstring_content'> seconds elapsed)</span><span class='tstring_end'>&quot;</span></span> <span class='op'>+</span>
+        <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Timed out waiting for </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_description'>description</span><span class='rbrace'>}</span><span class='tstring_content'> (</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_timeout_sec'>timeout_sec</span><span class='rbrace'>}</span><span class='tstring_content'> seconds elapsed)</span><span class='tstring_end'>&quot;</span></span> <span class='op'>+</span>
         <span class='id identifier rubyid_get_additional_message'>get_additional_message</span><span class='lparen'>(</span><span class='id identifier rubyid_condition_result'>condition_result</span><span class='rparen'>)</span>
       <span class='rparen'>)</span>
     <span class='kw'>end</span>
-    <span class='id identifier rubyid_sleep'>sleep</span><span class='lparen'>(</span><span class='id identifier rubyid_delay_sec'>delay_sec</span><span class='rparen'>)</span>
+
+    <span class='comment'># The condition evaluation function might have taken some time, so we subtract that time
+</span>    <span class='comment'># from the time we have to wait.
+</span>    <span class='id identifier rubyid_sleep_time_sec'>sleep_time_sec</span> <span class='op'>=</span> <span class='id identifier rubyid_condition_eval_start_time'>condition_eval_start_time</span> <span class='op'>+</span> <span class='id identifier rubyid_delay_sec'>delay_sec</span> <span class='op'>-</span> <span class='id identifier rubyid_current_time'>current_time</span>
+    <span class='id identifier rubyid_sleep'>sleep</span><span class='lparen'>(</span><span class='id identifier rubyid_sleep_time_sec'>sleep_time_sec</span><span class='rparen'>)</span> <span class='kw'>if</span> <span class='id identifier rubyid_sleep_time_sec'>sleep_time_sec</span> <span class='op'>&gt;</span> <span class='int'>0</span>
+
     <span class='id identifier rubyid_iteration'>iteration</span> <span class='op'>+=</span> <span class='int'>1</span>
-  <span class='kw'>end</span>
+    <span class='id identifier rubyid_condition_eval_start_time'>condition_eval_start_time</span> <span class='op'>=</span> <span class='const'>Time</span><span class='period'>.</span><span class='id identifier rubyid_now'>now</span>  <span class='comment'># we will evaluate the condition again immediately
+</span>  <span class='kw'>end</span>
+
   <span class='kw'>if</span> <span class='id identifier rubyid_verbose'>verbose</span>
-    <span class='cvar'>@@logger</span><span class='period'>.</span><span class='id identifier rubyid_info'>info</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Success waiting for </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_description'>description</span><span class='embexpr_end'>}</span><span class='tstring_content'> (</span><span class='embexpr_beg'>#{</span><span class='const'>Time</span><span class='period'>.</span><span class='id identifier rubyid_now'>now</span> <span class='op'>-</span> <span class='id identifier rubyid_start_time'>start_time</span><span class='embexpr_end'>}</span><span class='tstring_content'> seconds)</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+    <span class='cvar'>@@logger</span><span class='period'>.</span><span class='id identifier rubyid_info'>info</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Success waiting for </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_description'>description</span><span class='rbrace'>}</span><span class='tstring_content'> (</span><span class='embexpr_beg'>#{</span><span class='const'>Time</span><span class='period'>.</span><span class='id identifier rubyid_now'>now</span> <span class='op'>-</span> <span class='id identifier rubyid_start_time'>start_time</span><span class='rbrace'>}</span><span class='tstring_content'> seconds)</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
   <span class='kw'>end</span>
   <span class='kw'>true</span>
 <span class='kw'>end</span></pre>
@@ -378,7 +404,7 @@ timeout.</p>
 </h3><div class="docstring">
   <div class="discussion">
     
-<p>Wait until a service is available at the given host/port.</p>
+<p>Wait until a TCP service is available at the given host/port.</p>
 
 
   </div>
@@ -392,30 +418,26 @@ timeout.</p>
       <pre class="lines">
 
 
-54
-55
-56
-57
-58
-59
-60
-61
-62
-63
-64
-65</pre>
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/waitutil.rb', line 54</span>
+      <pre class="code"><span class="info file"># File 'lib/waitutil.rb', line 68</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_wait_for_service'>wait_for_service</span><span class='lparen'>(</span><span class='id identifier rubyid_description'>description</span><span class='comma'>,</span> <span class='id identifier rubyid_host'>host</span><span class='comma'>,</span> <span class='id identifier rubyid_port'>port</span><span class='comma'>,</span> <span class='id identifier rubyid_options'>options</span> <span class='op'>=</span> <span class='lbrace'>{</span><span class='rbrace'>}</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_wait_for_condition'>wait_for_condition</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_description'>description</span><span class='embexpr_end'>}</span><span class='tstring_content'> port </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_port'>port</span><span class='embexpr_end'>}</span><span class='tstring_content'> to become available on </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_host'>host</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span>
+  <span class='id identifier rubyid_wait_for_condition'>wait_for_condition</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_description'>description</span><span class='rbrace'>}</span><span class='tstring_content'> to become available on </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_host'>host</span><span class='rbrace'>}</span><span class='tstring_content'>, port </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_port'>port</span><span class='rbrace'>}</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span>
                      <span class='id identifier rubyid_options'>options</span><span class='rparen'>)</span> <span class='kw'>do</span>
     <span class='kw'>begin</span>
-      <span class='id identifier rubyid_s'>s</span> <span class='op'>=</span> <span class='const'>TCPSocket</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='id identifier rubyid_host'>host</span><span class='comma'>,</span> <span class='id identifier rubyid_port'>port</span><span class='rparen'>)</span>
-      <span class='id identifier rubyid_s'>s</span><span class='period'>.</span><span class='id identifier rubyid_close'>close</span>
-      <span class='kw'>true</span>
-    <span class='kw'>rescue</span> <span class='const'>Errno</span><span class='op'>::</span><span class='const'>ECONNREFUSED</span><span class='comma'>,</span> <span class='const'>Errno</span><span class='op'>::</span><span class='const'>EHOSTUNREACH</span>
+      <span class='id identifier rubyid_is_tcp_port_open'>is_tcp_port_open</span><span class='lparen'>(</span><span class='id identifier rubyid_host'>host</span><span class='comma'>,</span> <span class='id identifier rubyid_port'>port</span><span class='comma'>,</span> <span class='id identifier rubyid_options'>options</span><span class='lbracket'>[</span><span class='symbol'>:delay_sec</span><span class='rbracket'>]</span> <span class='op'>||</span> <span class='const'>DEFAULT_DELAY_SEC</span><span class='rparen'>)</span>
+    <span class='kw'>rescue</span> <span class='const'>SocketError</span>
       <span class='kw'>false</span>
     <span class='kw'>end</span>
   <span class='kw'>end</span>
@@ -430,9 +452,9 @@ timeout.</p>
 </div>
 
     <div id="footer">
-  Generated on Sun Feb 16 00:48:43 2014 by
+  Generated on Thu Mar  6 01:17:30 2014 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
-  0.8.7.3 (ruby-2.1.0).
+  0.8.7.3 (ruby-1.9.3).
 </div>
 
   </body>
