@@ -127,7 +127,7 @@ module WaitUtil
           begin
             writer[0].write_nonblock("\x0")
             true
-          rescue Errno::ECONNREFUSED
+          rescue Errno::ECONNREFUSED, Errno::EPIPE
             false
           end
         end
